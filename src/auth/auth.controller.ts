@@ -5,15 +5,15 @@ import {
   HttpStatus,
   Post,
   Res,
+  UseFilters,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { ThrottleExceptionFilter } from '../filters/ThrottleExceptionFilter';
 @Controller('auth')
 export class AuthController {
   cookies_options: {} = {
@@ -29,6 +29,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @UseFilters(ThrottleExceptionFilter)
   async login(
     @Body() user: CreateUserDto,
     @Res({ passthrough: true }) response: Response,
